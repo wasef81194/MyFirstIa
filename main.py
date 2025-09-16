@@ -35,4 +35,4 @@ questions_vectors = vectorizer.transform(questions)
 def find_best_answer(user_question):
     user_vector = vectorizer.transform([user_question]) #Vectorise la question de l'utilisateur
     similarities = (questions_vectors * user_vector.T).toarray()
-    
+     
