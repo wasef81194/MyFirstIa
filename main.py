@@ -29,10 +29,22 @@ answers = [
 ]
 
 #Transformer les questions en vecteur TF-IDF il permet de savoir de combien de fois un mot apparaît dans la phrase et de à quel point ce mot est rare dans toutes les phrases
+#Pour qu’une IA puisse analyser, comparer, et traiter des questions, il faut convertir ces textes en représentations numériques (des vecteurs).
 vectorizer = TfidfVectorizer().fit(questions)
 questions_vectors = vectorizer.transform(questions)
 
 def find_best_answer(user_question):
     user_vector = vectorizer.transform([user_question]) #Vectorise la question de l'utilisateur
-    similarities = (questions_vectors * user_vector.T).toarray()
-     
+    similarities = (questions_vectors * user_vector.T).toarray() #On multiplie les poids des mots pour voir dans quelle mesure les mots importants d’une question se retrouvent dans l’autre.
+    #Plus le résultat est grand, plus les questions sont similaires (le minimum est 0 et le max est 1).
+    best_idx = np.argmax(similarities) # retourne l'indice de la valeur maximale dans ce tableau
+    score = similarities[best_idx][0] # recupere le score de l'indice de la valeur maximale
+    if score == 0 : # Si le score est 0, cela signifie que la question utilisateur ne correspond à aucune question dans notre base de données
+        return "Désolé, je ne connais pas la réponse à cette question." 
+    # Sinon, on retourne la réponse associée à la question la plus proche de celle posée par l'utilisateur
+    return answers[best_idx]
+
+if __name__ == "__main__":
+    print("Posez une question sur Valorant (tapez 'quit' pour arrêter) :")
+    user_input = input("> ")
+    print(find_best_answer(user_input))
